@@ -1,0 +1,64 @@
+﻿@page "/editbook/{bookId}"
+@using AuditTrialTest.Data.Services
+@using AuditTrialTest.Models
+@inject NavigationManager NavigationManager
+@inject BookService BookService
+
+<h1>Edit Book</h1>
+
+@if (Book == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="form-group mb-3">
+        <label for="name">Title:</label>
+        <input type="text" class="form-control" id="name" @bind="Book.Title">
+    </div>
+
+    <div class="form-group mb-3">
+        <label for="price">Author:</label>
+        <input type="text" class="form-control" id="price" @bind="Book.Author">
+    </div>
+    
+    <div class="form-group mb-3">
+        <label for="price">Description:</label>
+        <input type="text" class="form-control" id="price" @bind="Book.Description">
+    </div>
+
+    <button class="btn btn-primary" @onclick="SaveBook">Save</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+}
+
+@code {
+    [Parameter]
+    public string bookId { get; set; }
+
+    private Book Book { get; set; }
+
+    protected override void OnInitialized()
+    {
+        // Retrieve product details using the provided productId
+        int id;
+        if (int.TryParse(bookId, out id))
+        {
+            Book = BookService.GetBook(id)!;
+        }
+    }
+
+    private void SaveBook()
+    {
+        // Update the product details
+        BookService.UpdateBook(Book);
+
+        // Navigate back to the products list page
+        NavigationManager.NavigateTo("/");
+    }
+
+    private void Cancel()
+    {
+        // Navigate back to the products list page
+        NavigationManager.NavigateTo("/");
+    }
+}

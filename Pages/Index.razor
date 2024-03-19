@@ -1,0 +1,74 @@
+﻿@page "/"
+@using AuditTrialTest.Data.Services
+@using AuditTrialTest.Models
+@inject BookService _BookService
+@inject NavigationManager _NavigationManager
+<h1>Products</h1>
+
+@if (BooksList == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var product in BooksList)
+            {
+                <tr>
+                    <td>@product.Id</td>
+                    <td>@product.Title</td>
+                    <td>@product.Author</td>
+                    <td>
+                        <button class="btn btn-primary" @onclick="() => EditProduct(product)">Edit</button>
+                        <button class="btn btn-danger" @onclick="() => DeleteProduct(product)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<button class="btn btn-success" @onclick="AddProduct">Add Product</button>
+
+@code {
+    List<Book> BooksList = new List<Book>();
+
+    protected override void OnInitialized()
+    {
+        LoadProducts();
+    }
+
+    private void LoadProducts()
+    {
+        BooksList = _BookService.GetAllBooks();
+    }
+
+    private void AddProduct()
+    {
+        // Redirect to Add Product page
+        _NavigationManager.NavigateTo("/addbook");
+    }
+
+    private void EditProduct(Book book)
+    {
+        // Redirect to Edit Product page with product ID
+        _NavigationManager.NavigateTo($"/editbook/{book.Id}");
+    }
+
+    private void DeleteProduct(Book book)
+    {
+        // Perform delete operation
+        _BookService.RemoveBook(book);
+        // Refresh the product list
+        LoadProducts();
+    }
+}
